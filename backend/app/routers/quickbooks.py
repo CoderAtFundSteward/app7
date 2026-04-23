@@ -2,6 +2,7 @@ from typing import Any
 
 import httpx
 from datetime import UTC, datetime, timedelta
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import RedirectResponse
 
@@ -29,6 +30,7 @@ from app.services.quickbooks_service import (
 
 router = APIRouter()
 settings = QuickBooksSettings()
+logger = logging.getLogger("membership-api")
 
 
 def _raise_service_error(error: Exception) -> None:
@@ -62,6 +64,12 @@ def quickbooks_callback(
 ) -> RedirectResponse:
     frontend_url = settings.frontend_url.rstrip("/")
     if not code or not state or not realm_id:
+        logger.warning(
+            "QuickBooks callback missing required params: code=%s state=%s realm_id=%s",
+            bool(code),
+            bool(state),
+            bool(realm_id),
+        )
         return RedirectResponse(
             url=f"{frontend_url}/dashboard/quickbooks?error=true", status_code=302
         )
@@ -76,13 +84,27 @@ def quickbooks_callback(
             headers={"Accept": "application/json"},
             timeout=30.0,
         )
-        token_response.raise_for_status()
+        if token_response.is_error:
+            logger.error(
+                "QuickBooks token exchange failed: status=%s body=%s member_id=%s realm_id=%s",
+                token_response.status_code,
+                token_response.text,
+                member_id,
+                realm_id,
+            )
+            token_response.raise_for_status()
         token_data = token_response.json()
 
         access_token = token_data.get("access_token")
         refresh_token = token_data.get("refresh_token")
         expires_in = int(token_data.get("expires_in", 3600))
         if not access_token or not refresh_token:
+            logger.error(
+                "QuickBooks token response missing tokens: member_id=%s realm_id=%s body=%s",
+                member_id,
+                realm_id,
+                token_data,
+            )
             return RedirectResponse(
                 url=f"{frontend_url}/dashboard/quickbooks?error=true", status_code=302
             )
@@ -104,6 +126,14 @@ def quickbooks_callback(
                 info_response.json()
                 .get("CompanyInfo", {})
                 .get("CompanyName")
+            )
+        else:
+            logger.warning(
+                "QuickBooks company info fetch failed (continuing): status=%s body=%s member_id=%s realm_id=%s",
+                info_response.status_code,
+                info_response.text,
+                member_id,
+                realm_id,
             )
 
         expires_at = datetime.now(UTC) + timedelta(seconds=expires_in)
@@ -136,10 +166,17 @@ def quickbooks_callback(
         else:
             supabase.table("quickbooks_connections").insert(payload).execute()
 
+        logger.info(
+            "QuickBooks callback success for member_id=%s realm_id=%s company_name=%s",
+            member_id,
+            realm_id,
+            company_name,
+        )
         return RedirectResponse(
             url=f"{frontend_url}/dashboard/quickbooks?connected=true", status_code=302
         )
     except Exception:
+        logger.exception("QuickBooks callback failed")
         return RedirectResponse(
             url=f"{frontend_url}/dashboard/quickbooks?error=true", status_code=302
         )
