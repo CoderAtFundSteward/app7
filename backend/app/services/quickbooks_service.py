@@ -5,6 +5,7 @@ from typing import Any
 
 import httpx
 from dotenv import load_dotenv
+from requests_oauthlib import OAuth2Session
 
 from app.database.supabase import get_supabase_client
 
@@ -206,12 +207,25 @@ def get_qb_client(member_id: str) -> QuickBooks:
     auth_client.refresh_token = connection.get("refresh_token")
     auth_client.realm_id = connection.get("realm_id")
 
-    return QuickBooks(
+    qb_client = QuickBooks(
         auth_client=auth_client,
         company_id=connection.get("realm_id"),
         refresh_token=connection.get("refresh_token"),
-        minorversion=65,
+        minorversion=75,
     )
+    if getattr(qb_client, "session", None) is None:
+        access_token = connection.get("access_token")
+        refresh_token = connection.get("refresh_token")
+        if not access_token:
+            raise QBReconnectRequiredError(
+                "QuickBooks access token is missing. Please reconnect your account."
+            )
+        qb_client.session = OAuth2Session(
+            client_id,
+            token={"access_token": access_token, "refresh_token": refresh_token},
+        )
+
+    return qb_client
 
 
 def get_invoices(member_id: str, max_results: int = 50) -> list[dict[str, Any]]:
