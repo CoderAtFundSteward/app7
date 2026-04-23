@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.auth.member_auth import AuthMember, require_auth
 from app.database.supabase import get_supabase_client
 from app.models.schemas import MemberProfile, QBStatus, UpdateMemberRequest
+from app.services.quickbooks_service import get_connection_status
 
 router = APIRouter()
 
@@ -84,26 +85,14 @@ def update_me(
     response_model=QBStatus,
 )
 def get_qb_status(auth_member: AuthMember = Depends(require_auth)) -> QBStatus:
-    supabase = get_supabase_client()
     _ensure_member_row(auth_member)
-
-    response = (
-        supabase.table("quickbooks_connections")
-        .select("company_name,last_synced_at,is_active")
-        .eq("member_id", auth_member["id"])
-        .eq("is_active", True)
-        .order("connected_at", desc=True)
-        .limit(1)
-        .execute()
-    )
-    rows = response.data or []
-    if not rows:
+    status_data = get_connection_status(auth_member["id"])
+    if not status_data["connected"]:
         return QBStatus(connected=False, company_name=None, last_synced_at=None)
 
-    row = rows[0]
-    last_synced_at = row.get("last_synced_at")
+    last_synced_at = status_data.get("last_synced_at")
     return QBStatus(
         connected=True,
-        company_name=row.get("company_name"),
+        company_name=status_data.get("company_name"),
         last_synced_at=str(last_synced_at) if last_synced_at else None,
     )

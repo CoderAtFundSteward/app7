@@ -72,7 +72,13 @@ export default function QuickBooksConnect() {
       await mutate();
       setToast({ type: "success", message: "QuickBooks data synced." });
     } catch (err) {
-      setActionError("Sync failed. Please try again in a moment.");
+      const message =
+        err instanceof Error ? err.message : "Sync failed. Please try again in a moment.";
+      if (message.toLowerCase().includes("quickbooks")) {
+        setActionError("QuickBooks authorization expired. Please reconnect your account.");
+      } else {
+        setActionError("Sync failed. Please try again in a moment.");
+      }
       console.error(err);
     } finally {
       setSyncing(false);

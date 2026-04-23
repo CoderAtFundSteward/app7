@@ -115,6 +115,9 @@ async function apiClient<T>(
     }
 
     if (response.status === 401) {
+      if (message.toLowerCase().includes("quickbooks")) {
+        throw new ApiError(401, message || "QuickBooks authorization expired. Please reconnect.");
+      }
       if (typeof window !== "undefined") {
         const redirectTo = `${window.location.pathname}${window.location.search}`;
         window.location.href = `/login?redirectTo=${encodeURIComponent(redirectTo)}`;

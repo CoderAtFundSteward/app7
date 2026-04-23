@@ -169,6 +169,12 @@ def _get_active_connection(member_id: str) -> dict[str, Any]:
     return rows[0]
 
 
+def _deactivate_member_connections(member_id: str) -> None:
+    get_supabase_client().table("quickbooks_connections").update({"is_active": False}).eq(
+        "member_id", member_id
+    ).eq("is_active", True).execute()
+
+
 def _refresh_tokens(connection: dict[str, Any]) -> dict[str, Any]:
     client_id = os.getenv("QB_CLIENT_ID", "")
     client_secret = os.getenv("QB_CLIENT_SECRET", "")
@@ -240,6 +246,22 @@ def _ensure_valid_connection(member_id: str) -> dict[str, Any]:
     if expires_at and datetime.now(UTC) >= (expires_at - timedelta(minutes=5)):
         return _refresh_tokens(connection)
     return connection
+
+
+def get_connection_status(member_id: str) -> dict[str, Any]:
+    try:
+        connection = _ensure_valid_connection(member_id)
+    except MemberQBConnectionNotFoundError:
+        return {"connected": False, "company_name": None, "last_synced_at": None}
+    except QBReconnectRequiredError:
+        _deactivate_member_connections(member_id)
+        return {"connected": False, "company_name": None, "last_synced_at": None}
+
+    return {
+        "connected": True,
+        "company_name": connection.get("company_name"),
+        "last_synced_at": connection.get("last_synced_at"),
+    }
 
 
 def get_qb_client(member_id: str) -> QuickBooks:
@@ -491,7 +513,4 @@ def sync_and_cache_transactions(member_id: str) -> None:
 
 
 def disconnect_quickbooks(member_id: str) -> None:
-    connection = _get_active_connection(member_id)
-    get_supabase_client().table("quickbooks_connections").update(
-        {"is_active": False}
-    ).eq("id", connection["id"]).execute()
+    _deactivate_member_connections(member_id)
