@@ -81,6 +81,17 @@ def _extract_status_code(error: Exception) -> int | None:
     return None
 
 
+def _extract_quickbooks_fault_message(payload: dict[str, Any]) -> str:
+    fault = payload.get("Fault", {})
+    errors = fault.get("Error", [])
+    if isinstance(errors, list) and errors:
+        first = errors[0] or {}
+        detail = first.get("Detail") or first.get("Message")
+        if detail:
+            return str(detail)
+    return "QuickBooks API returned an error."
+
+
 def _handle_qb_error(error: Exception) -> None:
     status_code = _extract_status_code(error)
     message = str(error)
@@ -91,6 +102,52 @@ def _handle_qb_error(error: Exception) -> None:
             "QuickBooks authorization failed. Please reconnect your account."
         ) from error
     raise error
+
+
+def _run_qbo_query(member_id: str, select_query: str) -> dict[str, Any]:
+    connection = _ensure_valid_connection(member_id)
+    realm_id = connection.get("realm_id")
+    access_token = connection.get("access_token")
+    if not realm_id or not access_token:
+        raise QBReconnectRequiredError(
+            "QuickBooks connection is incomplete. Please reconnect your account."
+        )
+
+    url = f"{_get_qb_api_base()}/v3/company/{realm_id}/query"
+    response = httpx.post(
+        url,
+        content=select_query,
+        headers={
+            "Authorization": f"Bearer {access_token}",
+            "Accept": "application/json",
+            "Content-Type": "application/text",
+        },
+        params={"minorversion": 75},
+        timeout=30.0,
+    )
+
+    if response.status_code == 429:
+        raise QBRateLimitError("QuickBooks API rate limit reached. Please retry later.")
+    if response.status_code in (401, 403):
+        raise QBReconnectRequiredError(
+            "QuickBooks access is no longer valid. Please reconnect your account."
+        )
+    if response.is_error:
+        raise RuntimeError(f"QuickBooks query failed: {response.text}")
+
+    payload = response.json()
+    if "Fault" in payload:
+        message = _extract_quickbooks_fault_message(payload)
+        if "rate limit" in message.lower():
+            raise QBRateLimitError(message)
+        if "token" in message.lower() or "unauthorized" in message.lower():
+            raise QBReconnectRequiredError(
+                "QuickBooks authorization failed. Please reconnect your account."
+            )
+        raise RuntimeError(message)
+
+    query_response = payload.get("QueryResponse", {})
+    return query_response if isinstance(query_response, dict) else {}
 
 
 def _get_active_connection(member_id: str) -> dict[str, Any]:
@@ -229,27 +286,28 @@ def get_qb_client(member_id: str) -> QuickBooks:
 
 
 def get_invoices(member_id: str, max_results: int = 50) -> list[dict[str, Any]]:
-    qb = get_qb_client(member_id)
+    query = f"SELECT * FROM Invoice MAXRESULTS {max_results}"
     try:
-        invoices = Invoice.filter(max_results=max_results, qb=qb)
+        query_response = _run_qbo_query(member_id, query)
+        invoices = query_response.get("Invoice", []) or []
     except Exception as exc:
         _handle_qb_error(exc)
 
     results: list[dict[str, Any]] = []
     for invoice in invoices:
-        customer_ref = getattr(invoice, "CustomerRef", None)
-        balance = _to_float(getattr(invoice, "Balance", 0))
+        customer_ref = invoice.get("CustomerRef", {}) if isinstance(invoice, dict) else {}
+        balance = _to_float(invoice.get("Balance", 0))
         status = "paid" if balance == 0 else "open"
-        meta = getattr(invoice, "MetaData", None)
-        created_at = getattr(meta, "CreateTime", None) if meta else None
+        meta = invoice.get("MetaData", {}) if isinstance(invoice, dict) else {}
+        created_at = meta.get("CreateTime") if isinstance(meta, dict) else None
         results.append(
             {
-                "id": str(getattr(invoice, "Id", "")),
-                "doc_number": getattr(invoice, "DocNumber", None),
-                "customer_name": getattr(customer_ref, "name", None),
-                "total_amount": _to_float(getattr(invoice, "TotalAmt", 0)),
+                "id": str(invoice.get("Id", "")),
+                "doc_number": invoice.get("DocNumber"),
+                "customer_name": customer_ref.get("name") if isinstance(customer_ref, dict) else None,
+                "total_amount": _to_float(invoice.get("TotalAmt", 0)),
                 "balance": balance,
-                "due_date": getattr(invoice, "DueDate", None),
+                "due_date": invoice.get("DueDate"),
                 "status": status,
                 "created_at": created_at,
             }
@@ -258,47 +316,53 @@ def get_invoices(member_id: str, max_results: int = 50) -> list[dict[str, Any]]:
 
 
 def get_payments(member_id: str, max_results: int = 50) -> list[dict[str, Any]]:
-    qb = get_qb_client(member_id)
+    query = f"SELECT * FROM Payment MAXRESULTS {max_results}"
     try:
-        payments = Payment.filter(max_results=max_results, qb=qb)
+        query_response = _run_qbo_query(member_id, query)
+        payments = query_response.get("Payment", []) or []
     except Exception as exc:
         _handle_qb_error(exc)
 
     results: list[dict[str, Any]] = []
     for payment in payments:
-        customer_ref = getattr(payment, "CustomerRef", None)
-        payment_method_ref = getattr(payment, "PaymentMethodRef", None)
+        customer_ref = payment.get("CustomerRef", {}) if isinstance(payment, dict) else {}
+        payment_method_ref = (
+            payment.get("PaymentMethodRef", {}) if isinstance(payment, dict) else {}
+        )
         results.append(
             {
-                "id": str(getattr(payment, "Id", "")),
-                "customer_name": getattr(customer_ref, "name", None),
-                "amount": _to_float(getattr(payment, "TotalAmt", 0)),
-                "payment_date": getattr(payment, "TxnDate", None),
-                "payment_method": getattr(payment_method_ref, "name", None),
+                "id": str(payment.get("Id", "")),
+                "customer_name": customer_ref.get("name") if isinstance(customer_ref, dict) else None,
+                "amount": _to_float(payment.get("TotalAmt", 0)),
+                "payment_date": payment.get("TxnDate"),
+                "payment_method": payment_method_ref.get("name")
+                if isinstance(payment_method_ref, dict)
+                else None,
             }
         )
     return results
 
 
 def get_bills(member_id: str, max_results: int = 50) -> list[dict[str, Any]]:
-    qb = get_qb_client(member_id)
+    query = f"SELECT * FROM Bill MAXRESULTS {max_results}"
     try:
-        bills = Bill.filter(max_results=max_results, qb=qb)
+        query_response = _run_qbo_query(member_id, query)
+        bills = query_response.get("Bill", []) or []
     except Exception as exc:
         _handle_qb_error(exc)
 
     results: list[dict[str, Any]] = []
     for bill in bills:
-        vendor_ref = getattr(bill, "VendorRef", None)
-        balance = _to_float(getattr(bill, "Balance", 0))
+        vendor_ref = bill.get("VendorRef", {}) if isinstance(bill, dict) else {}
+        balance = _to_float(bill.get("Balance", 0))
         status = "paid" if balance == 0 else "open"
         results.append(
             {
-                "id": str(getattr(bill, "Id", "")),
-                "vendor_name": getattr(vendor_ref, "name", None),
-                "total_amount": _to_float(getattr(bill, "TotalAmt", 0)),
+                "id": str(bill.get("Id", "")),
+                "vendor_name": vendor_ref.get("name") if isinstance(vendor_ref, dict) else None,
+                "total_amount": _to_float(bill.get("TotalAmt", 0)),
                 "balance": balance,
-                "due_date": getattr(bill, "DueDate", None),
+                "due_date": bill.get("DueDate"),
                 "status": status,
             }
         )
