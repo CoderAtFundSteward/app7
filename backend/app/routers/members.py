@@ -1,9 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 
 from app.auth.member_auth import AuthMember, require_auth
 from app.database.supabase import get_supabase_client
-from app.models.schemas import MemberProfile, QBStatus, UpdateMemberRequest
+from app.models.schemas import (
+    MemberProfile,
+    QBStatus,
+    SpreadsheetUploadResponse,
+    SpreadsheetUploadSummary,
+    UpdateMemberRequest,
+)
 from app.services.quickbooks_service import get_connection_status
+from app.services.spreadsheet_service import import_spreadsheet, list_spreadsheet_uploads
 
 router = APIRouter()
 
@@ -96,3 +103,44 @@ def get_qb_status(auth_member: AuthMember = Depends(require_auth)) -> QBStatus:
         company_name=status_data.get("company_name"),
         last_synced_at=str(last_synced_at) if last_synced_at else None,
     )
+
+
+@router.post("/me/spreadsheet-upload", response_model=SpreadsheetUploadResponse)
+async def upload_spreadsheet(
+    file: UploadFile = File(...),
+    auth_member: AuthMember = Depends(require_auth),
+) -> SpreadsheetUploadResponse:
+    _ensure_member_row(auth_member)
+    if not file.filename:
+        raise HTTPException(status_code=400, detail="File name is missing.")
+    file_bytes = await file.read()
+    if not file_bytes:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    if len(file_bytes) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File too large. Max size is 10MB.")
+    try:
+        result = import_spreadsheet(auth_member["id"], file.filename, file_bytes)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Spreadsheet import failed: {exc}") from exc
+    return SpreadsheetUploadResponse(**result)
+
+
+@router.get("/me/spreadsheet-uploads", response_model=list[SpreadsheetUploadSummary])
+def get_spreadsheet_uploads(
+    limit: int = Query(default=20, ge=1, le=100),
+    auth_member: AuthMember = Depends(require_auth),
+) -> list[SpreadsheetUploadSummary]:
+    _ensure_member_row(auth_member)
+    uploads = list_spreadsheet_uploads(auth_member["id"], limit=limit)
+    return [
+        SpreadsheetUploadSummary(
+            id=item["id"],
+            file_name=item["file_name"],
+            file_type=item["file_type"],
+            row_count=item["row_count"],
+            uploaded_at=str(item["uploaded_at"]),
+        )
+        for item in uploads
+    ]

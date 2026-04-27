@@ -50,6 +50,21 @@ export interface PLSummary {
   net_income: number;
 }
 
+export interface SpreadsheetUploadResult {
+  upload_id: string;
+  file_name: string;
+  file_type: string;
+  rows_imported: number;
+}
+
+export interface SpreadsheetUploadSummary {
+  id: string;
+  file_name: string;
+  file_type: string;
+  row_count: number;
+  uploaded_at: string;
+}
+
 export interface UpdateMemberProfileRequest {
   full_name: string;
 }
@@ -95,7 +110,10 @@ async function apiClient<T>(
 ): Promise<T> {
   const token = await getAccessToken();
   const headers = new Headers(options.headers ?? {});
-  headers.set("Content-Type", "application/json");
+  const isFormData = options.body instanceof FormData;
+  if (!isFormData) {
+    headers.set("Content-Type", "application/json");
+  }
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -187,6 +205,19 @@ export async function getPLSummary(): Promise<PLSummary> {
 
 export async function syncQBData(): Promise<void> {
   await apiClient<void>("/api/qb/sync", { method: "POST" }, true);
+}
+
+export async function uploadSpreadsheet(file: File): Promise<SpreadsheetUploadResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+  return apiClient<SpreadsheetUploadResult>("/api/members/me/spreadsheet-upload", {
+    method: "POST",
+    body: formData
+  });
+}
+
+export async function getSpreadsheetUploads(): Promise<SpreadsheetUploadSummary[]> {
+  return apiClient<SpreadsheetUploadSummary[]>("/api/members/me/spreadsheet-uploads");
 }
 
 // Backward-compatible helpers with previous naming used by existing components.

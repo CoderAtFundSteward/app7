@@ -2,6 +2,7 @@
 
 import { useMemo, useState, type ReactNode } from "react";
 import QuickBooksConnect from "@/components/QuickBooksConnect";
+import SpreadsheetUploadCard from "@/components/SpreadsheetUploadCard";
 import type { Bill, Invoice, Payment } from "@/lib/api";
 import {
   useBills,
@@ -63,6 +64,7 @@ export default function QuickBooksPage() {
       </div>
 
       <QuickBooksConnect />
+      <SpreadsheetUploadCard />
 
       {statusError && (
         <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">

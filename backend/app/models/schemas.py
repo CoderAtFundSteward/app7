@@ -37,6 +37,21 @@ class UpdateMemberRequest(BaseModel):
     full_name: str
 
 
+class SpreadsheetUploadResponse(BaseModel):
+    upload_id: str
+    file_name: str
+    file_type: str
+    rows_imported: int
+
+
+class SpreadsheetUploadSummary(BaseModel):
+    id: str
+    file_name: str
+    file_type: str
+    row_count: int
+    uploaded_at: str
+
+
 class Transaction(BaseModel):
     id: str
     txn_date: str = Field(description="Transaction date in YYYY-MM-DD format.")
