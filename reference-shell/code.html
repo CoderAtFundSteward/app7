@@ -1,0 +1,328 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>FundSteward | Financial Intelligence for Mission-Driven Organizations</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#0A192F", // Navy
+            "secondary": "#B3934F", // Gold Accent
+            "accent": "#C9A961",
+            "background": "#F8F9FA", // Light Neutral Surface
+            "surface": "#FFFFFF",
+            "on-surface": "#111111",
+            "on-surface-variant": "#4A5568",
+            "outline": "#E2E8F0",
+          },
+          borderRadius: {
+            "DEFAULT": "0.5rem",
+            "lg": "0.75rem",
+            "xl": "1rem",
+            "full": "9999px"
+          },
+          fontFamily: {
+            sans: ["Manrope", "sans-serif"],
+            "h1": ["Manrope", "sans-serif"],
+            "h2": ["Manrope", "sans-serif"],
+            "h3": ["Manrope", "sans-serif"],
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Manrope', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .editorial-shadow {
+      box-shadow: 0 20px 40px -10px rgba(10, 25, 47, 0.1);
+    }
+    .gold-gradient {
+      background: linear-gradient(135deg, #C9A961 0%, #B3934F 100%);
+    }
+    .letter-spacing-tight { letter-spacing: -0.02em; }
+    .letter-spacing-wide { letter-spacing: 0.05em; }
+  </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- NAVIGATION BAR -->
+<nav class="sticky top-0 z-50 bg-primary/95 backdrop-blur-md border-b border-white/5 px-6 py-5">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="text-secondary">
+<svg fill="none" height="28" viewBox="0 0 48 48" width="28" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="font-bold text-xl text-white tracking-tight" style="">FundSteward</span>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-white/70 hover:text-white font-semibold text-xs uppercase tracking-widest transition-colors" href="#" style="">Product</a>
+<a class="text-white/70 hover:text-white font-semibold text-xs uppercase tracking-widest transition-colors" href="#" style="">Integrations</a>
+<a class="text-white/70 hover:text-white font-semibold text-xs uppercase tracking-widest transition-colors" href="#" style="">Pricing</a>
+<a class="text-white/70 hover:text-white font-semibold text-xs uppercase tracking-widest transition-colors" href="#" style="">Contact</a>
+</div>
+<button class="bg-secondary hover:bg-accent text-primary px-7 py-2.5 rounded-full font-bold uppercase tracking-widest text-[10px] transition-all" style="">
+      Request Demo
+    </button>
+</div>
+</nav>
+<!-- HERO SECTION -->
+<section class="relative pt-28 pb-36 px-6 overflow-hidden">
+<div class="max-w-4xl mx-auto text-center">
+<div class="space-y-8 flex flex-col items-center">
+<div class="inline-flex items-center px-4 py-1.5 rounded-full bg-secondary/10 text-secondary font-bold text-[10px] uppercase tracking-widest border border-secondary/20" style="">
+        Now in Private Beta
+      </div>
+<h1 class="text-5xl lg:text-7xl font-extrabold text-primary leading-[1.1] letter-spacing-tight" style="">
+        Fund-level financial intelligence for mission-driven organizations.
+      </h1>
+<p class="text-lg text-on-surface-variant max-w-2xl leading-relaxed" style="">
+        Automated financial oversight by connecting your organization's mission to your accounting tools.
+      </p>
+<div class="flex flex-wrap justify-center gap-4 pt-4">
+<button class="gold-gradient text-primary px-10 py-5 rounded-lg font-extrabold text-sm uppercase tracking-widest editorial-shadow hover:scale-[1.02] transition-all" style="">
+          Request a Demo
+        </button>
+<button class="border-2 border-primary text-primary hover:bg-primary hover:text-white px-10 py-5 rounded-lg font-extrabold text-sm uppercase tracking-widest transition-all" style="">
+          Learn More
+        </button>
+</div>
+<div class="flex flex-wrap justify-center gap-x-10 gap-y-4 pt-8">
+<div class="flex items-center gap-2.5 text-primary">
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+<span class="text-sm font-bold tracking-tight" style="">Automated reconciliation</span>
+</div>
+<div class="flex items-center gap-2.5 text-primary">
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+<span class="text-sm font-bold tracking-tight" style="">Real-time reporting</span>
+</div>
+<div class="flex items-center gap-2.5 text-primary">
+<span class="material-symbols-outlined text-secondary text-xl" style="font-variation-settings: &quot;FILL&quot; 1;">check_circle</span>
+<span class="text-sm font-bold tracking-tight" style="">Mission-aligned insights</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PROBLEM SECTION -->
+<section class="bg-primary py-32 px-6">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-24">
+<h2 class="text-4xl font-extrabold text-white mb-6 letter-spacing-tight" style="">The high cost of manual reporting.</h2>
+<p class="text-lg text-white/60 max-w-2xl mx-auto leading-relaxed" style="">
+        Manual reconciliation and fund accounting shouldn't cost you an entire staff salary. Reclaim your time for the mission.
+      </p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<div class="bg-white/5 p-10 rounded-2xl border border-white/10 hover:border-secondary/30 transition-colors group">
+<span class="material-symbols-outlined text-secondary text-4xl mb-6 block" data-icon="schedule" style="">schedule</span>
+<h3 class="text-white text-2xl font-bold mb-3" style="">Extensive hours per month</h3>
+<p class="text-white/50 text-sm leading-relaxed" style="">The significant time spent by non-profit admins manually syncing giving data with accounting software.</p>
+</div>
+<div class="bg-white/5 p-10 rounded-2xl border border-white/10 hover:border-secondary/30 transition-colors group">
+<span class="material-symbols-outlined text-secondary text-4xl mb-6 block" data-icon="warning" style="">warning</span>
+<h3 class="text-white text-2xl font-bold mb-3" style="">Significant Monthly Overhead</h3>
+<p class="text-white/50 text-sm leading-relaxed" style="">Labor costs hidden in spreadsheets, manual entry, and year-end audit preparation delays.</p>
+</div>
+<div class="bg-white/5 p-10 rounded-2xl border border-white/10 hover:border-secondary/30 transition-colors group">
+<span class="material-symbols-outlined text-secondary text-4xl mb-6 block" data-icon="verified" style="">verified</span>
+<h3 class="text-white text-2xl font-bold mb-3" style="">Substantial Annual Savings</h3>
+<p class="text-white/50 text-sm leading-relaxed" style="">Automated fund accounting reduces overhead and provides board-ready reports in seconds.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- HOW IT WORKS SECTION -->
+<section class="py-32 px-6 bg-white">
+<div class="max-w-7xl mx-auto">
+<h2 class="text-4xl font-extrabold text-primary text-center mb-24 letter-spacing-tight" style="">Connect. Sync. Insight.</h2>
+<div class="grid md:grid-cols-3 gap-16 relative">
+<div class="hidden md:block absolute top-12 left-[15%] right-[15%] h-[2px] bg-outline z-0"></div>
+<div class="relative z-10 flex flex-col items-center text-center">
+<div class="w-24 h-24 rounded-full gold-gradient flex items-center justify-center text-primary text-3xl font-extrabold border-8 border-white mb-8 editorial-shadow" style="">1</div>
+<div class="space-y-3">
+<h3 class="text-xl font-bold text-primary" style="">Connect Platforms</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed px-4" style="">Securely link your QuickBooks Online and giving platforms like Tithe.ly in minutes.</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center text-center">
+<div class="w-24 h-24 rounded-full gold-gradient flex items-center justify-center text-primary text-3xl font-extrabold border-8 border-white mb-8 editorial-shadow" style="">2</div>
+<div class="space-y-3">
+<h3 class="text-xl font-bold text-primary" style="">Automated Sync</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed px-4" style="">FundSteward maps every donation to the correct chart of accounts and fund class automatically.</p>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center text-center">
+<div class="w-24 h-24 rounded-full gold-gradient flex items-center justify-center text-primary text-3xl font-extrabold border-8 border-white mb-8 editorial-shadow" style="">3</div>
+<div class="space-y-3">
+<h3 class="text-xl font-bold text-primary" style="">Instant Reporting</h3>
+<p class="text-on-surface-variant text-sm leading-relaxed px-4" style="">Generate statement of activities and restricted fund reports with one click for board meetings.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- INTEGRATIONS SECTION -->
+<section class="py-32 px-6 bg-background">
+<div class="max-w-7xl mx-auto text-center">
+<h2 class="text-4xl font-extrabold text-primary mb-20 letter-spacing-tight" style="">Built on the tools you already use.</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+<div class="bg-white p-10 rounded-xl border border-outline editorial-shadow flex flex-col items-center gap-5 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 bg-background flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="account_balance" style="">account_balance</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-bold text-sm text-primary uppercase tracking-wider" style="">QuickBooks</h4>
+<p class="text-[11px] text-on-surface-variant" style="">The source of truth for your ledger.</p>
+</div>
+</div>
+<div class="bg-white p-10 rounded-xl border border-outline editorial-shadow flex flex-col items-center gap-5 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 bg-background flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="volunteer_activism" style="">volunteer_activism</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-bold text-sm text-primary uppercase tracking-wider" style="">Tithe.ly</h4>
+<p class="text-[11px] text-on-surface-variant" style="">Direct integration for church giving.</p>
+</div>
+</div>
+<div class="bg-white p-10 rounded-xl border border-outline editorial-shadow flex flex-col items-center gap-5 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 bg-background flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="event_note" style="">event_note</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-bold text-sm text-primary uppercase tracking-wider" style="">Planning Center</h4>
+<p class="text-[11px] text-on-surface-variant" style="">Seamless member data syncing.</p>
+</div>
+</div>
+<div class="bg-white p-10 rounded-xl border border-outline editorial-shadow flex flex-col items-center gap-5 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 bg-background flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="payments" style="">payments</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-bold text-sm text-primary uppercase tracking-wider" style="">Pushpay</h4>
+<p class="text-[11px] text-on-surface-variant" style="">Enterprise donation management.</p>
+</div>
+</div>
+<div class="bg-white p-10 rounded-xl border border-outline editorial-shadow flex flex-col items-center gap-5 transition-all hover:-translate-y-2">
+<div class="w-14 h-14 bg-background flex items-center justify-center rounded-lg">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="security" style="">security</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-bold text-sm text-primary uppercase tracking-wider" style="">Plaid</h4>
+<p class="text-[11px] text-on-surface-variant" style="">Bank-level secure connectivity.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- PRICING SECTION -->
+<section class="py-32 px-6 bg-white" id="pricing">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16">
+<h2 class="text-4xl font-extrabold text-primary mb-6 letter-spacing-tight" style="">Pricing that replaces your CPA invoice.</h2>
+<p class="text-on-surface-variant text-lg" style="">Transparent pricing for every stage of institutional growth.</p>
+</div>
+<div class="max-w-3xl mx-auto">
+<div class="bg-background p-12 rounded-2xl border border-outline editorial-shadow text-center space-y-8">
+<h3 class="text-3xl font-extrabold text-primary letter-spacing-tight" style="">Customized for your organization's scale.</h3>
+<p class="text-on-surface-variant text-lg max-w-xl mx-auto leading-relaxed" style="">
+        Whether you are a local community church or a global mission network, our platform scales to your complexity. Contact us for a bespoke quote tailored to your volume and reporting needs.
+      </p>
+<div class="pt-4">
+<a class="inline-block gold-gradient text-primary px-12 py-5 rounded-lg font-extrabold text-sm uppercase tracking-widest editorial-shadow hover:scale-[1.02] transition-all" href="#contact" style="">
+          Request Pricing Information
+        </a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CONTACT SECTION -->
+<section class="bg-primary py-32 px-6" id="contact">
+<div class="max-w-4xl mx-auto text-center">
+<h2 class="text-4xl font-extrabold text-white mb-6 letter-spacing-tight" style="">Request early access.</h2>
+<p class="text-lg text-white/60 mb-16 max-w-2xl mx-auto" style="">
+      We are currently in a private beta with selected mission-driven partners. Apply now to be first in line for our next rollout.
+    </p>
+<div class="bg-white/5 p-12 rounded-2xl border border-white/10 text-left editorial-shadow">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+<div class="space-y-3">
+<label class="text-white/40 text-[10px] uppercase tracking-widest font-extrabold" style="">Full Name</label>
+<input class="w-full bg-white/5 border-white/10 rounded-lg text-white py-4 px-5 focus:border-secondary focus:ring-0 placeholder:text-white/20 transition-all" placeholder="Jane Doe" type="text">
+</div>
+<div class="space-y-3">
+<label class="text-white/40 text-[10px] uppercase tracking-widest font-extrabold" style="">Organization</label>
+<input class="w-full bg-white/5 border-white/10 rounded-lg text-white py-4 px-5 focus:border-secondary focus:ring-0 placeholder:text-white/20 transition-all" placeholder="Grace Community" type="text">
+</div>
+</div>
+<div class="space-y-3 mb-10">
+<label class="text-white/40 text-[10px] uppercase tracking-widest font-extrabold" style="">Work Email</label>
+<input class="w-full bg-white/5 border-white/10 rounded-lg text-white py-4 px-5 focus:border-secondary focus:ring-0 placeholder:text-white/20 transition-all" placeholder="jane@organization.org" type="email">
+</div>
+<button class="w-full gold-gradient text-primary py-5 rounded-lg font-extrabold text-sm uppercase tracking-widest transition-all hover:scale-[1.01] editorial-shadow" style="">
+        Send Us an Email
+      </button>
+</div>
+</div>
+</section>
+<!-- FOOTER -->
+<footer class="bg-primary border-t border-white/5 py-20 px-6">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+<div class="space-y-8">
+<div class="flex items-center gap-3">
+<div class="text-secondary">
+<svg fill="none" height="24" viewBox="0 0 48 48" width="24" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<span class="font-bold text-xl text-white tracking-tight" style="">FundSteward</span>
+</div>
+<p class="text-white/40 text-sm leading-relaxed max-w-xs" style="">
+          Headquartered in Atlanta, GA.<br>
+          Empowering stewards of capital since 2026.
+        </p>
+</div>
+<div>
+<h5 class="text-white font-extrabold text-[10px] mb-8 uppercase tracking-[0.2em]" style="">Platform</h5>
+<ul class="space-y-5 text-white/50 text-sm font-medium">
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Product Overview</a></li>
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Integrations</a></li>
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Security</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-extrabold text-[10px] mb-8 uppercase tracking-[0.2em]" style="">Company</h5>
+<ul class="space-y-5 text-white/50 text-sm font-medium">
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Privacy Policy</a></li>
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Terms of Service</a></li>
+<li class="" style=""><a class="hover:text-secondary transition-colors" href="#" style="">Contact Support</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-extrabold text-[10px] mb-8 uppercase tracking-[0.2em]" style="">Connect</h5>
+<div class="flex gap-5">
+<a class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-secondary hover:text-secondary transition-all" href="#" style="">
+<span class="material-symbols-outlined text-xl" data-icon="mail" style="">mail</span>
+</a>
+<a class="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/50 hover:border-secondary hover:text-secondary transition-all" href="#" style="">
+<span class="material-symbols-outlined text-xl" data-icon="share" style="">share</span>
+</a>
+</div>
+</div>
+</div>
+<div class="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+<p class="text-white/30 text-[11px] font-medium tracking-wide" style="">© 2026 FundSteward Inc. All rights reserved.</p>
+<p class="text-white/20 text-[10px] max-w-lg text-center md:text-right italic font-medium leading-relaxed" style=""><br></p>
+</div>
+</div>
+</footer>
+</body></html>

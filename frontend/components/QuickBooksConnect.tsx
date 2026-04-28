@@ -104,38 +104,39 @@ export default function QuickBooksConnect() {
     <>
       {toast && (
         <div
-          className={`fixed right-4 top-4 z-50 rounded-lg border px-4 py-3 text-sm shadow-lg ${
+          className={`fixed right-4 top-4 z-50 rounded-lg border px-4 py-3 text-sm editorial-shadow ${
             toast.type === "success"
-              ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-200"
-              : "border-rose-500/30 bg-rose-500/15 text-rose-200"
+              ? "border-secondary/40 bg-secondary/15 text-primary"
+              : "border-rose-200 bg-rose-50 text-rose-800"
           }`}
         >
           {toast.message}
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 shadow-xl shadow-emerald-950/10 sm:p-6">
+      <div className="editorial-shadow rounded-2xl border border-outline bg-surface p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-white">QuickBooks Online</h2>
-            <p className="mt-1 text-sm text-slate-400">
+            <h2 className="text-lg font-extrabold text-primary">QuickBooks Online</h2>
+            <p className="mt-1 text-sm text-on-surface-variant">
               Connect your account to sync invoices, payments, and bills.
             </p>
           </div>
-          <span className="inline-flex w-fit items-center rounded-full border border-slate-700 bg-slate-800 px-3 py-1 text-xs font-medium text-slate-200">
+          <span className="inline-flex w-fit items-center rounded-full border border-outline bg-background px-3 py-1 text-xs font-semibold text-on-surface-variant">
             Powered by Intuit
           </span>
         </div>
 
         {(statusError || actionError) && (
-          <div className="mt-4 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">
+          <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
             <p>{actionError ?? statusError}</p>
             <button
+              type="button"
               onClick={() => {
                 setActionError(null);
                 void mutate();
               }}
-              className="mt-2 rounded-md border border-rose-400/40 px-3 py-1.5 text-xs font-medium hover:bg-rose-500/10"
+              className="mt-2 rounded-md border border-rose-300 px-3 py-1.5 text-xs font-semibold text-rose-900 hover:bg-rose-100"
             >
               Retry
             </button>
@@ -143,13 +144,14 @@ export default function QuickBooksConnect() {
         )}
 
         {isLoading ? (
-          <div className="mt-5 flex items-center gap-3 text-sm text-slate-300">
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-500 border-t-emerald-400" />
+          <div className="mt-5 flex items-center gap-3 text-sm text-on-surface-variant">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-outline border-t-secondary" />
             Checking QuickBooks connection...
           </div>
         ) : !qbStatus?.connected ? (
           <div className="mt-5">
             <button
+              type="button"
               onClick={handleConnect}
               disabled={connecting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold text-white transition disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
@@ -172,32 +174,38 @@ export default function QuickBooksConnect() {
           </div>
         ) : (
           <div className="mt-5 space-y-4">
-            <div className="grid gap-3 rounded-lg border border-slate-800 bg-slate-950/50 p-4 text-sm sm:grid-cols-2">
+            <div className="grid gap-3 rounded-lg border border-outline bg-background p-4 text-sm sm:grid-cols-2">
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-500">Company</p>
-                <p className="mt-1 font-medium text-slate-100">{qbStatus.company_name ?? "Connected"}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+                  Company
+                </p>
+                <p className="mt-1 font-semibold text-primary">{qbStatus.company_name ?? "Connected"}</p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-slate-500">Last synced</p>
-                <p className="mt-1 font-medium text-slate-100">{formattedLastSync}</p>
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+                  Last synced
+                </p>
+                <p className="mt-1 font-semibold text-primary">{formattedLastSync}</p>
               </div>
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <button
+                type="button"
                 onClick={handleSync}
                 disabled={syncing}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-semibold text-emerald-200 transition hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:opacity-70"
+                className="gold-gradient editorial-shadow inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-extrabold uppercase tracking-widest text-primary transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:scale-100"
               >
                 {syncing && (
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-emerald-300/70 border-t-emerald-100" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary/40 border-t-primary" />
                 )}
                 {syncing ? "Syncing..." : "Sync Now"}
               </button>
               <button
+                type="button"
                 onClick={handleDisconnect}
                 disabled={disconnecting}
-                className="rounded-lg border border-slate-700 px-4 py-2.5 text-sm font-medium text-slate-200 transition hover:border-slate-500 disabled:cursor-not-allowed disabled:opacity-70"
+                className="rounded-lg border border-outline px-4 py-2.5 text-sm font-semibold text-on-surface transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {disconnecting ? "Disconnecting..." : "Disconnect"}
               </button>

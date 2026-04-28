@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import FundStewardLogo from "@/components/marketing/FundStewardLogo";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/components/SupabaseSessionProvider";
 
@@ -35,28 +36,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="relative -mx-4 min-h-[calc(100vh-4rem)] sm:-mx-6">
+    <div className="relative min-h-screen">
       {menuOpen && (
         <button
           aria-label="Close menu overlay"
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-30 bg-primary/40 backdrop-blur-sm lg:hidden"
           onClick={() => setMenuOpen(false)}
         />
       )}
 
-      <div className="grid min-h-[calc(100vh-4rem)] lg:grid-cols-[260px_1fr]">
+      <div className="grid min-h-screen lg:grid-cols-[260px_1fr]">
         <aside
-          className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-slate-800 bg-slate-950 p-5 transition-transform duration-200 lg:static lg:w-auto lg:translate-x-0 ${
+          className={`fixed inset-y-0 left-0 z-40 w-64 transform border-r border-white/10 bg-primary p-5 transition-transform duration-200 lg:static lg:w-auto lg:translate-x-0 ${
             menuOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <div className="mb-6 flex items-center justify-between lg:mb-10">
-            <Link href="/dashboard" className="text-sm font-semibold tracking-wide text-emerald-300">
-              FundSteward
+            <Link href="/dashboard" className="flex items-center gap-2.5">
+              <span className="text-secondary">
+                <FundStewardLogo className="h-7 w-7 shrink-0" />
+              </span>
+              <span className="text-sm font-bold tracking-tight text-white">FundSteward</span>
             </Link>
             <button
               onClick={() => setMenuOpen(false)}
-              className="rounded border border-slate-700 px-2 py-1 text-xs text-slate-300 lg:hidden"
+              className="rounded-lg border border-white/15 px-2 py-1 text-xs text-white/70 transition hover:border-white/30 hover:text-white lg:hidden"
             >
               Close
             </button>
@@ -71,10 +75,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`block rounded-lg px-3 py-2 text-sm transition ${
+                  className={`block rounded-lg px-3 py-2 text-sm font-medium transition ${
                     isActive
-                      ? "bg-emerald-500/20 text-emerald-200"
-                      : "text-slate-300 hover:bg-slate-900 hover:text-white"
+                      ? "bg-secondary/20 text-secondary"
+                      : "text-white/70 hover:bg-white/5 hover:text-white"
                   }`}
                   onClick={() => setMenuOpen(false)}
                 >
@@ -84,32 +88,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             })}
           </nav>
 
-          <div className="mt-8 border-t border-slate-800 pt-5">
+          <div className="mt-8 border-t border-white/10 pt-5">
+            <Link
+              href="/"
+              className="mb-3 block rounded-lg px-3 py-2 text-sm text-white/50 transition hover:bg-white/5 hover:text-white/80"
+            >
+              ← Marketing site
+            </Link>
             <button
               onClick={handleLogout}
-              className="w-full rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-200 transition hover:border-slate-500 hover:text-white"
+              className="w-full rounded-lg border border-white/15 px-3 py-2 text-sm text-white/80 transition hover:border-secondary/50 hover:text-secondary"
             >
               Logout
             </button>
           </div>
         </aside>
 
-        <section className="bg-slate-100">
-          <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-6">
+        <section className="bg-background">
+          <header className="sticky top-0 z-20 border-b border-outline bg-surface/95 px-4 py-3 backdrop-blur sm:px-6">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => setMenuOpen(true)}
-                className="inline-flex items-center gap-2 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 lg:hidden"
+                className="inline-flex items-center gap-2 rounded-lg border border-outline bg-surface px-3 py-1.5 text-sm font-medium text-primary lg:hidden"
               >
                 <span className="text-base leading-none">☰</span>
                 Menu
               </button>
               <div className="ml-auto flex items-center gap-3">
                 <div className="text-right">
-                  <p className="text-xs text-slate-500">Signed in as</p>
-                  <p className="text-sm font-medium text-slate-800">{memberName}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+                    Signed in as
+                  </p>
+                  <p className="text-sm font-semibold text-primary">{memberName}</p>
                 </div>
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-bold text-white ring-2 ring-secondary/40">
                   {avatarLabel}
                 </div>
               </div>

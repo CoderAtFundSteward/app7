@@ -57,8 +57,10 @@ export default function QuickBooksPage() {
   return (
     <section className="space-y-8">
       <div>
-        <h1 className="text-2xl font-semibold text-white">QuickBooks Integration</h1>
-        <p className="text-slate-400">
+        <h1 className="letter-spacing-tight text-2xl font-extrabold text-primary sm:text-3xl">
+          QuickBooks Integration
+        </h1>
+        <p className="text-on-surface-variant">
           Connect your QuickBooks Online account and review transactions.
         </p>
       </div>
@@ -67,15 +69,15 @@ export default function QuickBooksPage() {
       <SpreadsheetUploadCard />
 
       {statusError && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-sm text-rose-200">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
           {statusError}
         </div>
       )}
 
       {!isStatusLoading && !connected && (
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 text-center">
-          <h2 className="text-xl font-semibold text-white">Unlock your financial insights</h2>
-          <p className="mx-auto mt-3 max-w-2xl text-sm text-slate-400">
+        <div className="editorial-shadow rounded-2xl border border-outline bg-surface p-8 text-center">
+          <h2 className="text-xl font-extrabold text-primary">Unlock your financial insights</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-sm text-on-surface-variant">
             Connect QuickBooks to see invoices, payments, bills, and real-time profit and loss
             metrics in one place. This helps members monitor cash flow and stay audit-ready.
           </p>
@@ -85,7 +87,7 @@ export default function QuickBooksPage() {
       {connected && (
         <>
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+            <h2 className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
               Summary
             </h2>
             {isSummaryLoading ? (
@@ -103,17 +105,18 @@ export default function QuickBooksPage() {
             )}
           </section>
 
-          <section className="rounded-2xl border border-slate-800 bg-slate-900/70 p-4 sm:p-6">
+          <section className="editorial-shadow rounded-2xl border border-outline bg-surface p-4 sm:p-6">
             <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex rounded-lg border border-slate-700 bg-slate-950 p-1">
+              <div className="inline-flex rounded-lg border border-outline bg-background p-1">
                 {(["invoices", "payments", "bills"] as const).map((tab) => (
                   <button
                     key={tab}
+                    type="button"
                     onClick={() => setActiveTab(tab)}
-                    className={`rounded-md px-3 py-2 text-sm font-medium capitalize transition ${
+                    className={`rounded-md px-3 py-2 text-sm font-semibold capitalize transition ${
                       activeTab === tab
-                        ? "bg-emerald-500/20 text-emerald-200"
-                        : "text-slate-300 hover:text-white"
+                        ? "bg-secondary/20 text-primary"
+                        : "text-on-surface-variant hover:text-primary"
                     }`}
                   >
                     {tab}
@@ -125,7 +128,7 @@ export default function QuickBooksPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search records..."
-                className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-emerald-400 focus:outline-none sm:max-w-xs"
+                className="w-full rounded-lg border border-outline bg-background px-3 py-2 text-sm text-primary placeholder:text-on-surface-variant/60 focus:border-secondary focus:outline-none sm:max-w-xs"
               />
             </div>
 
@@ -163,7 +166,7 @@ export default function QuickBooksPage() {
                   />
                 )}
                 renderRow={(row) => (
-                  <tr key={row.id} className="border-t border-slate-800 text-sm text-slate-200">
+                  <tr key={row.id} className="border-t border-outline text-sm text-on-surface">
                     <td className="px-3 py-2">{row.doc_number ?? "-"}</td>
                     <td className="px-3 py-2">{row.customer_name ?? "-"}</td>
                     <td className="px-3 py-2 text-right">{formatCurrency(row.total_amount)}</td>
@@ -205,7 +208,7 @@ export default function QuickBooksPage() {
                   />
                 )}
                 renderRow={(row) => (
-                  <tr key={row.id} className="border-t border-slate-800 text-sm text-slate-200">
+                  <tr key={row.id} className="border-t border-outline text-sm text-on-surface">
                     <td className="px-3 py-2">{row.payment_date ?? "-"}</td>
                     <td className="px-3 py-2">{row.customer_name ?? "-"}</td>
                     <td className="px-3 py-2 text-right">{formatCurrency(row.amount)}</td>
@@ -247,7 +250,7 @@ export default function QuickBooksPage() {
                   />
                 )}
                 renderRow={(row) => (
-                  <tr key={row.id} className="border-t border-slate-800 text-sm text-slate-200">
+                  <tr key={row.id} className="border-t border-outline text-sm text-on-surface">
                     <td className="px-3 py-2">{row.vendor_name ?? "-"}</td>
                     <td className="px-3 py-2 text-right">{formatCurrency(row.total_amount)}</td>
                     <td className="px-3 py-2 text-right">{formatCurrency(row.balance)}</td>
@@ -308,10 +311,10 @@ function SummarySkeleton() {
       {[0, 1, 2].map((item) => (
         <div
           key={item}
-          className="animate-pulse rounded-xl border border-slate-800 bg-slate-900/60 p-4"
+          className="editorial-shadow animate-pulse rounded-xl border border-outline bg-surface p-4"
         >
-          <div className="h-3 w-24 rounded bg-slate-700" />
-          <div className="mt-3 h-7 w-36 rounded bg-slate-700" />
+          <div className="h-3 w-24 rounded bg-outline/80" />
+          <div className="mt-3 h-7 w-36 rounded bg-outline/80" />
         </div>
       ))}
     </div>
@@ -329,15 +332,17 @@ function MetricCard({
 }) {
   const valueColor =
     highlight === "positive"
-      ? "text-emerald-300"
+      ? "text-emerald-700"
       : highlight === "negative"
-        ? "text-rose-300"
-        : "text-white";
+        ? "text-rose-600"
+        : "text-primary";
 
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-4">
-      <p className="text-xs uppercase tracking-wider text-slate-500">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold ${valueColor}`}>{formatCurrency(value)}</p>
+    <div className="editorial-shadow rounded-xl border border-outline bg-surface p-4">
+      <p className="text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant">
+        {label}
+      </p>
+      <p className={`mt-2 text-2xl font-extrabold ${valueColor}`}>{formatCurrency(value)}</p>
     </div>
   );
 }
@@ -350,13 +355,13 @@ function MobileDataCard({
   fields: Array<{ label: string; value: string }>;
 }) {
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-950/40 p-3 md:hidden">
-      <h4 className="text-sm font-semibold text-white">{title}</h4>
+    <div className="rounded-lg border border-outline bg-background p-3 md:hidden">
+      <h4 className="text-sm font-bold text-primary">{title}</h4>
       <dl className="mt-2 grid grid-cols-2 gap-y-2 text-xs">
         {fields.map((field) => (
           <div key={`${title}-${field.label}`} className="contents">
-            <dt className="text-slate-500">{field.label}</dt>
-            <dd className="text-right text-slate-200">{field.value}</dd>
+            <dt className="text-on-surface-variant">{field.label}</dt>
+            <dd className="text-right font-medium text-on-surface">{field.value}</dd>
           </div>
         ))}
       </dl>
@@ -391,7 +396,7 @@ function DataTableSection<T>({
         {[0, 1, 2, 3].map((item) => (
           <div
             key={item}
-            className="h-12 animate-pulse rounded-lg border border-slate-800 bg-slate-950/50"
+            className="h-12 animate-pulse rounded-lg border border-outline bg-background/80"
           />
         ))}
       </div>
@@ -399,12 +404,12 @@ function DataTableSection<T>({
   }
 
   if (error) {
-    return <p className="text-sm text-rose-300">{error}</p>;
+    return <p className="text-sm font-medium text-rose-600">{error}</p>;
   }
 
   if (!rows.length) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-700 bg-slate-950/40 p-8 text-center text-sm text-slate-400">
+      <div className="rounded-lg border border-dashed border-outline bg-background/50 p-8 text-center text-sm text-on-surface-variant">
         {emptyMessage}
       </div>
     );
@@ -412,20 +417,25 @@ function DataTableSection<T>({
 
   return (
     <div className="space-y-3">
-      <div className="space-y-3 md:hidden">{rows.map((row, i) => <div key={i}>{renderMobileCard(row)}</div>)}</div>
+      <div className="space-y-3 md:hidden">
+        {rows.map((row, i) => (
+          <div key={i}>{renderMobileCard(row)}</div>
+        ))}
+      </div>
       <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full">
           <thead>
-            <tr className="border-b border-slate-800">
+            <tr className="border-b border-outline">
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className={`px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-400 ${
+                  className={`px-3 py-2 text-[10px] font-extrabold uppercase tracking-widest text-on-surface-variant ${
                     column.numeric ? "text-right" : "text-left"
                   }`}
                 >
                   <button
-                    className="inline-flex items-center gap-1 hover:text-white"
+                    type="button"
+                    className="inline-flex items-center gap-1 hover:text-primary"
                     onClick={() => onSort(column.key)}
                   >
                     {column.label}

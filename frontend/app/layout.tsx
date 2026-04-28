@@ -1,13 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Manrope } from "next/font/google";
 import AppNav from "@/components/AppNav";
 import { SupabaseSessionProvider } from "@/components/SupabaseSessionProvider";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import "./globals.css";
 
+const manrope = Manrope({
+  subsets: ["latin"],
+  variable: "--font-manrope",
+  display: "swap"
+});
+
 export const metadata: Metadata = {
-  title: "FundSteward Membership Dashboard",
+  title: "FundSteward | Financial Intelligence for Mission-Driven Organizations",
   description:
-    "Secure member portal for subscriptions, QuickBooks connectivity, and financial visibility."
+    "Automated financial oversight by connecting your organization's mission to accounting tools. Private beta for mission-driven partners."
 };
 
 export const viewport: Viewport = {
@@ -27,13 +34,11 @@ export default async function RootLayout({
   } = await supabase.auth.getSession();
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className={`${manrope.variable} scroll-smooth`}>
+      <body className="min-h-screen font-sans antialiased">
         <SupabaseSessionProvider initialSession={session}>
-          <div className="min-h-screen bg-slate-950 text-slate-100">
-            <AppNav />
-            <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">{children}</main>
-          </div>
+          <AppNav />
+          <main className="min-h-screen">{children}</main>
         </SupabaseSessionProvider>
       </body>
     </html>

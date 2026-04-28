@@ -47,18 +47,19 @@ export default function SpreadsheetUploadCard() {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
+    <div className="editorial-shadow rounded-2xl border border-outline bg-surface p-5 sm:p-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-white">Import Spreadsheet</h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <h2 className="text-lg font-extrabold text-primary">Import Spreadsheet</h2>
+          <p className="mt-1 text-sm text-on-surface-variant">
             Upload CSV or XLSX accounting transactions. The file and imported rows are saved in
             your profile database records.
           </p>
         </div>
         <button
+          type="button"
           onClick={refreshUploads}
-          className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-200 hover:border-slate-500"
+          className="rounded-lg border border-outline px-3 py-2 text-sm font-semibold text-primary transition hover:border-secondary/50 hover:text-secondary"
         >
           Refresh uploads
         </button>
@@ -69,48 +70,49 @@ export default function SpreadsheetUploadCard() {
           type="file"
           accept={acceptedTypes}
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 file:mr-3 file:rounded file:border-0 file:bg-slate-700 file:px-3 file:py-1.5 file:text-slate-100 sm:max-w-md"
+          className="w-full rounded-lg border border-outline bg-background px-3 py-2 text-sm text-primary file:mr-3 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white sm:max-w-md"
         />
         <button
+          type="button"
           disabled={!file || uploading}
           onClick={handleUpload}
-          className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="gold-gradient editorial-shadow rounded-lg px-4 py-2 text-sm font-extrabold uppercase tracking-widest text-primary disabled:cursor-not-allowed disabled:opacity-60"
         >
           {uploading ? "Uploading..." : "Upload & Import"}
         </button>
       </div>
 
       {error && (
-        <div className="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">
+        <div className="mt-3 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">
           {error}
         </div>
       )}
       {success && (
-        <div className="mt-3 rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+        <div className="mt-3 rounded-lg border border-secondary/40 bg-secondary/10 p-3 text-sm font-medium text-primary">
           {success}
         </div>
       )}
 
-      <div className="mt-4 rounded-lg border border-slate-800 bg-slate-950/40 p-3">
-        <h3 className="text-sm font-medium text-slate-200">Recent uploads</h3>
+      <div className="mt-4 rounded-lg border border-outline bg-background p-3">
+        <h3 className="text-sm font-bold text-primary">Recent uploads</h3>
         {loadingUploads ? (
-          <p className="mt-2 text-sm text-slate-400">Loading...</p>
+          <p className="mt-2 text-sm text-on-surface-variant">Loading...</p>
         ) : uploads.length ? (
           <div className="mt-2 space-y-2 text-sm">
             {uploads.slice(0, 5).map((upload) => (
               <div
                 key={upload.id}
-                className="flex flex-col gap-1 rounded border border-slate-800 px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-1 rounded-lg border border-outline px-3 py-2 sm:flex-row sm:items-center sm:justify-between"
               >
-                <span className="text-slate-200">{upload.file_name}</span>
-                <span className="text-slate-400">
+                <span className="font-medium text-on-surface">{upload.file_name}</span>
+                <span className="text-on-surface-variant">
                   {upload.row_count} rows • {new Date(upload.uploaded_at).toLocaleString()}
                 </span>
               </div>
             ))}
           </div>
         ) : (
-          <p className="mt-2 text-sm text-slate-400">No spreadsheet uploads yet.</p>
+          <p className="mt-2 text-sm text-on-surface-variant">No spreadsheet uploads yet.</p>
         )}
       </div>
     </div>

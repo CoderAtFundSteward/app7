@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import FundStewardLogo from "@/components/marketing/FundStewardLogo";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useSupabaseSession } from "@/components/SupabaseSessionProvider";
 
@@ -10,7 +11,12 @@ export default function AppNav() {
   const pathname = usePathname();
   const { session, loading } = useSupabaseSession();
 
-  if (pathname.startsWith("/dashboard")) {
+  if (
+    pathname === "/" ||
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/signup")
+  ) {
     return null;
   }
 
@@ -22,24 +28,33 @@ export default function AppNav() {
   }
 
   return (
-    <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-950/90 backdrop-blur">
-      <nav className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link href="/" className="text-sm font-semibold tracking-wide text-emerald-300">
-          FundSteward
+    <header className="sticky top-0 z-20 border-b border-white/5 bg-primary/95 backdrop-blur-md">
+      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
+        <Link href="/" className="flex items-center gap-3">
+          <span className="text-secondary">
+            <FundStewardLogo className="h-7 w-7 shrink-0" />
+          </span>
+          <span className="text-sm font-bold tracking-tight text-white sm:text-base">FundSteward</span>
         </Link>
 
-        <div className="flex items-center gap-3 text-sm">
-          <Link href="/dashboard" className="text-slate-300 transition hover:text-white">
+        <div className="flex items-center gap-2 text-sm sm:gap-3">
+          <Link
+            href="/dashboard"
+            className="font-semibold text-white/70 transition hover:text-white"
+          >
             Dashboard
           </Link>
           {!loading && !session && (
             <>
-              <Link href="/login" className="text-slate-300 transition hover:text-white">
+              <Link
+                href="/login"
+                className="rounded-full px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white/80 transition-colors hover:text-white sm:px-3 sm:text-xs sm:tracking-normal sm:normal-case"
+              >
                 Log in
               </Link>
               <Link
                 href="/signup"
-                className="rounded-md border border-emerald-400/40 bg-emerald-500/10 px-3 py-1.5 text-emerald-200 transition hover:bg-emerald-500/20"
+                className="rounded-full bg-secondary px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary transition-all hover:bg-accent sm:px-4 sm:text-xs sm:tracking-normal sm:normal-case"
               >
                 Sign up
               </Link>
@@ -47,8 +62,9 @@ export default function AppNav() {
           )}
           {!loading && session && (
             <button
+              type="button"
               onClick={handleLogout}
-              className="rounded-md border border-slate-700 px-3 py-1.5 text-slate-200 transition hover:border-slate-500 hover:text-white"
+              className="rounded-full border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-white transition hover:border-secondary/50 hover:text-secondary sm:text-xs"
             >
               Log out
             </button>
