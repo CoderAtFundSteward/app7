@@ -97,7 +97,9 @@ export interface Transaction {
   account_name: string;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+// If NEXT_PUBLIC_API_URL is set, the browser calls that host directly (needs CORS on FastAPI).
+// If unset/empty, use same-origin `/api/...`; `next.config.mjs` rewrites to BACKEND_ORIGIN (no CORS).
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/$/, "");
 
 export class ApiError extends Error {
   status: number;
