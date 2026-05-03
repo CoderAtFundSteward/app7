@@ -16,14 +16,25 @@ logger = logging.getLogger("membership-api")
 
 APP_VERSION = "1.0.0"
 ENVIRONMENT = os.getenv("ENVIRONMENT", "development").strip().lower()
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000").strip()
 PORT = int(os.getenv("PORT", "8000"))
+
+
+def _allowed_cors_origins() -> list[str]:
+    """Collect browser origins allowed to call this API (credentials: include)."""
+    origins: list[str] = []
+    for raw in os.getenv("FRONTEND_URL", "http://localhost:3000").split(","):
+        url = raw.strip().rstrip("/")
+        if url and url not in origins:
+            origins.append(url)
+    if "http://localhost:3000" not in origins:
+        origins.insert(0, "http://localhost:3000")
+    return origins
+
 
 app = FastAPI(title="Membership App API", version=APP_VERSION)
 
-allowed_origins = ["http://localhost:3000"]
-if FRONTEND_URL and FRONTEND_URL not in allowed_origins:
-    allowed_origins.append(FRONTEND_URL)
+allowed_origins = _allowed_cors_origins()
+logger.info("CORS allow_origins: %s", allowed_origins)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
