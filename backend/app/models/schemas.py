@@ -20,6 +20,20 @@ class QuickBooksConnectURLResponse(BaseModel):
     state: str
 
 
+class QuickBooksSetupStatusResponse(BaseModel):
+    """Non-secret summary for verifying Intuit Developer app vs server env (call GET /api/qb/setup-status)."""
+
+    oauth_client_configured: bool
+    has_client_secret: bool
+    qb_environment: str
+    redirect_uri: str
+    client_id_masked: str
+    oauth_authorize_host: str
+    expected_scope: str
+    frontend_base_url: str
+    intuit_portal_checks: list[str]
+
+
 class QuickBooksOAuthCallbackResponse(BaseModel):
     success: bool
     message: str

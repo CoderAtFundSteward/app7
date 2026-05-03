@@ -15,6 +15,7 @@ from app.auth.member_auth import AuthMember, require_auth
 from app.database.supabase import get_supabase_client
 from app.models.schemas import (
     QuickBooksConnectURLResponse,
+    QuickBooksSetupStatusResponse,
 )
 from app.services.quickbooks_service import (
     MemberQBConnectionNotFoundError,
@@ -31,6 +32,23 @@ from app.services.quickbooks_service import (
 router = APIRouter()
 settings = QuickBooksSettings()
 logger = logging.getLogger("membership-api")
+
+_SCOPE = "com.intuit.quickbooks.accounting"
+_OAUTH_AUTHORITY = "https://appcenter.intuit.com/connect/oauth2"
+
+
+def _mask_client_id(client_id: str) -> str:
+    cid = client_id.strip()
+    if not cid:
+        return "(missing)"
+    if len(cid) <= 12:
+        return f"{cid[:4]}…(length {len(cid)})"
+    return f"{cid[:8]}…{cid[-4:]}"
+
+
+def _first_frontend_url(raw: str) -> str:
+    first = (raw.split(",")[0] or "").strip().rstrip("/")
+    return first if first else "(missing)"
 
 
 def _raise_service_error(error: Exception) -> None:
@@ -62,6 +80,42 @@ def get_connect_url(auth_member: AuthMember = Depends(require_auth)) -> QuickBoo
     state = f"{auth_member['id']}:{create_oauth_state()}"
     url = build_quickbooks_connect_url(settings, state)
     return QuickBooksConnectURLResponse(url=url, state=state)
+
+
+@router.get("/setup-status", response_model=QuickBooksSetupStatusResponse)
+def quickbooks_setup_status(
+    _auth: AuthMember = Depends(require_auth),
+) -> QuickBooksSetupStatusResponse:
+    """Return non-secret OAuth settings so you can compare with developer.intuit.com (Keys & credentials)."""
+    cid = (settings.qb_client_id or "").strip()
+    has_secret = bool((settings.qb_client_secret or "").strip())
+    redir = (settings.qb_redirect_uri or "").strip()
+    env = (settings.qb_environment or "sandbox").strip()
+    frontend = _first_frontend_url(settings.frontend_url or "")
+
+    intuit_portal_checks = [
+        f"Redirect URI on the Intuit app must exactly match this server value "
+        f"(scheme, host, path; no extra slash): {redir or '(not set)'}",
+        f"Environment: server QB_ENVIRONMENT is {env!r}. Use a Sandbox company + "
+        "Development keys for sandbox; Production app + live QBO company when QB_ENVIRONMENT is production.",
+        f"Scopes: this app requests {_SCOPE}. In Intuit Developer, enable QuickBooks Online API under "
+        "the app capabilities that grant accounting access for your app type.",
+        "Paste Client ID and Client Secret from the same Intuit app into Railway as QB_CLIENT_ID and QB_CLIENT_SECRET.",
+        "After OAuth, users are redirected using FRONTEND_URL (first origin if comma-separated). "
+        f"Effective base for success/error redirects: {frontend}",
+    ]
+
+    return QuickBooksSetupStatusResponse(
+        oauth_client_configured=bool(cid and has_secret),
+        has_client_secret=has_secret,
+        qb_environment=env,
+        redirect_uri=redir or "(not set)",
+        client_id_masked=_mask_client_id(cid),
+        oauth_authorize_host=_OAUTH_AUTHORITY,
+        expected_scope=_SCOPE,
+        frontend_base_url=frontend,
+        intuit_portal_checks=intuit_portal_checks,
+    )
 
 
 @router.get("/callback")

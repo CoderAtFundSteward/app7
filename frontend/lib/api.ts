@@ -16,6 +16,19 @@ export interface QBStatus {
   last_synced_at: string | null;
 }
 
+/** Matches GET /api/qb/setup-status — safe to show in UI (no secrets). */
+export interface QBSetupStatus {
+  oauth_client_configured: boolean;
+  has_client_secret: boolean;
+  qb_environment: string;
+  redirect_uri: string;
+  client_id_masked: string;
+  oauth_authorize_host: string;
+  expected_scope: string;
+  frontend_base_url: string;
+  intuit_portal_checks: string[];
+}
+
 export interface Invoice {
   id: string;
   doc_number: string | null;
@@ -229,6 +242,10 @@ export async function updateMemberProfile(
 
 export async function getQBStatus(): Promise<QBStatus> {
   return apiClient<QBStatus>("/api/members/me/qb-status");
+}
+
+export async function getQBSetupStatus(): Promise<QBSetupStatus> {
+  return apiClient<QBSetupStatus>("/api/qb/setup-status");
 }
 
 export async function getQBConnectUrl(): Promise<string> {

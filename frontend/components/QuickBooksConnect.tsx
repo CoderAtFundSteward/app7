@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { disconnectQB, getQBConnectUrl, qbConnectFailureMessage, syncQBData } from "@/lib/api";
+import {
+  disconnectQB,
+  getQBConnectUrl,
+  getQBSetupStatus,
+  qbConnectFailureMessage,
+  syncQBData,
+  type QBSetupStatus
+} from "@/lib/api";
 import { useQBStatus } from "@/lib/hooks/useQBData";
 
 export default function QuickBooksConnect() {
@@ -11,6 +18,9 @@ export default function QuickBooksConnect() {
   const [disconnecting, setDisconnecting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [intuitVerify, setIntuitVerify] = useState<QBSetupStatus | null>(null);
+  const [intuitVerifyLoading, setIntuitVerifyLoading] = useState(false);
+  const [intuitVerifyError, setIntuitVerifyError] = useState<string | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -85,6 +95,21 @@ export default function QuickBooksConnect() {
     }
   };
 
+  const handleVerifyIntuit = async () => {
+    setIntuitVerifyError(null);
+    setIntuitVerifyLoading(true);
+    try {
+      const s = await getQBSetupStatus();
+      setIntuitVerify(s);
+    } catch (err) {
+      setIntuitVerify(null);
+      setIntuitVerifyError(err instanceof Error ? err.message : "Could not load setup status.");
+      console.error(err);
+    } finally {
+      setIntuitVerifyLoading(false);
+    }
+  };
+
   const handleDisconnect = async () => {
     setDisconnecting(true);
     setActionError(null);
@@ -142,6 +167,66 @@ export default function QuickBooksConnect() {
             </button>
           </div>
         )}
+
+        <div className="mt-4 border-t border-outline pt-4">
+          <button
+            type="button"
+            onClick={() => void handleVerifyIntuit()}
+            disabled={intuitVerifyLoading}
+            className="rounded-lg border border-outline px-3 py-2 text-xs font-semibold text-on-surface-variant transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {intuitVerifyLoading ? "Loading…" : "Verify Intuit ↔ server settings"}
+          </button>
+          {intuitVerifyError && <p className="mt-2 text-xs text-rose-700">{intuitVerifyError}</p>}
+          {intuitVerify && (
+            <div className="mt-3 space-y-3 rounded-lg border border-outline bg-background p-4 text-xs text-primary">
+              <div className="grid gap-2 sm:grid-cols-2">
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">OAuth credentials on server</p>
+                  <p className="mt-1">
+                    {intuitVerify.oauth_client_configured ? (
+                      <span className="text-emerald-700">Client ID + secret present</span>
+                    ) : (
+                      <span className="text-rose-700">Missing QB_CLIENT_ID or QB_CLIENT_SECRET</span>
+                    )}
+                  </p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">Client ID (masked)</p>
+                  <p className="mt-1 font-mono">{intuitVerify.client_id_masked}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">QB_ENVIRONMENT</p>
+                  <p className="mt-1">{intuitVerify.qb_environment}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">Redirect URI (must match Intuit app)</p>
+                  <p className="mt-1 break-all font-mono text-[11px]">{intuitVerify.redirect_uri}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">OAuth authorize URL</p>
+                  <p className="mt-1 break-all font-mono text-[11px]">{intuitVerify.oauth_authorize_host}</p>
+                </div>
+                <div>
+                  <p className="font-extrabold text-on-surface-variant">Scope</p>
+                  <p className="mt-1 break-all font-mono text-[11px]">{intuitVerify.expected_scope}</p>
+                </div>
+                <div className="sm:col-span-2">
+                  <p className="font-extrabold text-on-surface-variant">FRONTEND_URL (first origin for redirects)</p>
+                  <p className="mt-1 break-all font-mono text-[11px]">{intuitVerify.frontend_base_url}</p>
+                </div>
+              </div>
+              <div>
+                <p className="mb-2 font-extrabold text-on-surface-variant">Compare in Intuit Developer Portal</p>
+                <ol className="list-decimal space-y-2 pl-4 text-on-surface-variant">
+                  {intuitVerify.intuit_portal_checks.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          )}
+        </div>
 
         {isLoading ? (
           <div className="mt-5 flex items-center gap-3 text-sm text-on-surface-variant">
