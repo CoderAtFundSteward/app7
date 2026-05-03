@@ -100,6 +100,7 @@ export interface Transaction {
 // If NEXT_PUBLIC_API_URL is set, the browser calls that host directly (needs CORS on FastAPI).
 // If unset/empty, use same-origin `/api/...`; `next.config.mjs` rewrites to BACKEND_ORIGIN (no CORS).
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? "").trim().replace(/\/$/, "");
+const USES_SAME_ORIGIN_API_PROXY = API_BASE_URL.length === 0;
 
 export class ApiError extends Error {
   status: number;
@@ -151,11 +152,10 @@ export function apiRequestFailureMessage(err: unknown, inspectPath = "`/api/qb/c
   if (isApiError(err)) return err.message;
   if (typeof err === "string" && err.trim()) return err;
   if (err instanceof TypeError) {
-    return (
-      "Could not reach the API (network). Verify NEXT_PUBLIC_API_URL points to your deployed backend " +
-      "(Railway), sign in again, and ensure FRONTEND_URL / CORS on the backend includes this site’s origin. " +
-      (err.message ? `(${err.message})` : "")
-    );
+    const modeHint = USES_SAME_ORIGIN_API_PROXY
+      ? "This build uses same-origin /api/* (no NEXT_PUBLIC_API_URL). On Vercel set BACKEND_ORIGIN to your Railway API URL and redeploy—without it, rewrites hit localhost and every API call fails. "
+      : "Confirm NEXT_PUBLIC_API_URL is your Railway API, sign in again, and set FRONTEND_URL / CORS on the backend for this site’s origin. ";
+    return `Could not reach the API (network). ${modeHint}${err.message ? `(${err.message})` : ""}`;
   }
   if (err instanceof Error && err.message.trim()) return err.message;
   return (
