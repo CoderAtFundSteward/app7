@@ -15,7 +15,10 @@ export default function AppNav() {
     pathname === "/" ||
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/login") ||
-    pathname.startsWith("/signup")
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/update-password") ||
+    pathname.startsWith("/auth/")
   ) {
     return null;
   }
