@@ -86,13 +86,67 @@ export interface Transaction {
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-class ApiError extends Error {
+export class ApiError extends Error {
   status: number;
 
   constructor(status: number, message: string) {
     super(message);
     this.status = status;
   }
+}
+
+/** Works when `instanceof ApiError` is false (duplicate class in bundle). */
+export function isApiError(err: unknown): err is ApiError {
+  return (
+    err instanceof ApiError ||
+    (typeof err === "object" &&
+      err !== null &&
+      typeof (err as { status?: unknown }).status === "number" &&
+      typeof (err as { message?: unknown }).message === "string")
+  );
+}
+
+function fastApiDetailToMessage(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    const parts = detail.map((item) => {
+      if (item && typeof item === "object" && "msg" in item) {
+        return String((item as { msg: unknown }).msg);
+      }
+      try {
+        return JSON.stringify(item);
+      } catch {
+        return String(item);
+      }
+    });
+    return parts.filter(Boolean).join("; ") || "Request failed.";
+  }
+  if (detail && typeof detail === "object") {
+    try {
+      return JSON.stringify(detail);
+    } catch {
+      return "Request failed.";
+    }
+  }
+  return "Request failed.";
+}
+
+/** User-visible message for QuickBooks connect failures (network, API, auth). */
+export function qbConnectFailureMessage(err: unknown): string {
+  if (isApiError(err)) return err.message;
+  if (typeof err === "string" && err.trim()) return err;
+  if (err instanceof TypeError) {
+    return (
+      "Could not reach the API (network). Verify NEXT_PUBLIC_API_URL, sign in again, " +
+      "and ensure the backend CORS list includes this site’s URL (FRONTEND_URL). " +
+      (err.message ? `(${err.message})` : "")
+    );
+  }
+  if (err instanceof Error && err.message.trim()) return err.message;
+  return (
+    "Unable to start QuickBooks connection. Open DevTools → Network, retry, and inspect " +
+    "`/api/qb/connect/url` (status and response). Check the console for details."
+  );
 }
 
 async function getAccessToken(): Promise<string | undefined> {
@@ -125,8 +179,10 @@ async function apiClient<T>(
   if (!response.ok) {
     let message = "Request failed.";
     try {
-      const body = (await response.json()) as { detail?: string };
-      message = body.detail ?? message;
+      const body = (await response.json()) as { detail?: unknown };
+      if (body.detail !== undefined) {
+        message = fastApiDetailToMessage(body.detail);
+      }
     } catch {
       const text = await response.text();
       if (text) message = text;
@@ -146,10 +202,6 @@ async function apiClient<T>(
 
     if (response.status === 429) {
       throw new ApiError(429, "Rate limit reached. Please wait a moment and try again.");
-    }
-
-    if (response.status >= 500) {
-      throw new ApiError(500, "Server error. Please try again shortly.");
     }
 
     throw new ApiError(response.status, message);
@@ -181,6 +233,12 @@ export async function getQBStatus(): Promise<QBStatus> {
 
 export async function getQBConnectUrl(): Promise<string> {
   const response = await apiClient<QBConnectUrlResponse>("/api/qb/connect/url");
+  if (!response?.url || typeof response.url !== "string") {
+    throw new ApiError(
+      500,
+      "Server returned an invalid QuickBooks OAuth URL. Check QB_CLIENT_ID and backend logs."
+    );
+  }
   return response.url;
 }
 

@@ -51,6 +51,14 @@ def _raise_service_error(error: Exception) -> None:
 
 @router.get("/connect/url", response_model=QuickBooksConnectURLResponse)
 def get_connect_url(auth_member: AuthMember = Depends(require_auth)) -> QuickBooksConnectURLResponse:
+    if not (settings.qb_client_id or "").strip() or not (settings.qb_client_secret or "").strip():
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "QuickBooks OAuth is not configured on the server. "
+                "Set QB_CLIENT_ID and QB_CLIENT_SECRET in the backend environment."
+            ),
+        )
     state = f"{auth_member['id']}:{create_oauth_state()}"
     url = build_quickbooks_connect_url(settings, state)
     return QuickBooksConnectURLResponse(url=url, state=state)

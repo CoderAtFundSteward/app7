@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { disconnectQB, getQBConnectUrl, syncQBData } from "@/lib/api";
+import { disconnectQB, getQBConnectUrl, qbConnectFailureMessage, syncQBData } from "@/lib/api";
 import { useQBStatus } from "@/lib/hooks/useQBData";
 
 export default function QuickBooksConnect() {
@@ -58,8 +58,8 @@ export default function QuickBooksConnect() {
       const oauthUrl = await getQBConnectUrl();
       window.location.href = oauthUrl;
     } catch (err) {
-      setActionError("Unable to start QuickBooks connection right now. Please retry.");
-      console.error(err);
+      setActionError(qbConnectFailureMessage(err));
+      console.error("QuickBooks connect failed", err);
       setConnecting(false);
     }
   };
