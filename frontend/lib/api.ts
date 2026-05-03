@@ -136,7 +136,8 @@ async function apiClient<T>(
       if (message.toLowerCase().includes("quickbooks")) {
         throw new ApiError(401, message || "QuickBooks authorization expired. Please reconnect.");
       }
-      if (typeof window !== "undefined") {
+      // No redirect if we never sent a token (session not ready yet) — avoids login flash on dashboard.
+      if (token && typeof window !== "undefined") {
         const redirectTo = `${window.location.pathname}${window.location.search}`;
         window.location.href = `/login?redirectTo=${encodeURIComponent(redirectTo)}`;
       }
