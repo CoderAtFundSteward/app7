@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
+  apiRequestFailureMessage,
   disconnectQB,
   getQBConnectUrl,
   getQBSetupStatus,
@@ -103,8 +104,8 @@ export default function QuickBooksConnect() {
       setIntuitVerify(s);
     } catch (err) {
       setIntuitVerify(null);
-      setIntuitVerifyError(err instanceof Error ? err.message : "Could not load setup status.");
-      console.error(err);
+      setIntuitVerifyError(apiRequestFailureMessage(err, "`/api/qb/setup-status`"));
+      console.error("QuickBooks setup-status failed", err);
     } finally {
       setIntuitVerifyLoading(false);
     }

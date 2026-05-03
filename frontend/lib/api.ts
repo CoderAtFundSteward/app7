@@ -144,22 +144,27 @@ function fastApiDetailToMessage(detail: unknown): string {
   return "Request failed.";
 }
 
-/** User-visible message for QuickBooks connect failures (network, API, auth). */
-export function qbConnectFailureMessage(err: unknown): string {
+/** User-visible message for API failures from fetch (network, CORS, auth). */
+export function apiRequestFailureMessage(err: unknown, inspectPath = "`/api/qb/connect/url`"): string {
   if (isApiError(err)) return err.message;
   if (typeof err === "string" && err.trim()) return err;
   if (err instanceof TypeError) {
     return (
-      "Could not reach the API (network). Verify NEXT_PUBLIC_API_URL, sign in again, " +
-      "and ensure the backend CORS list includes this site’s URL (FRONTEND_URL). " +
+      "Could not reach the API (network). Verify NEXT_PUBLIC_API_URL points to your deployed backend " +
+      "(Railway), sign in again, and ensure FRONTEND_URL / CORS on the backend includes this site’s origin. " +
       (err.message ? `(${err.message})` : "")
     );
   }
   if (err instanceof Error && err.message.trim()) return err.message;
   return (
-    "Unable to start QuickBooks connection. Open DevTools → Network, retry, and inspect " +
-    "`/api/qb/connect/url` (status and response). Check the console for details."
+    "Request failed. Open DevTools → Network, retry, and inspect " +
+    `${inspectPath} (status and response). Check the console for details.`
   );
+}
+
+/** Same as {@link apiRequestFailureMessage} with the connect-url hint (preserves existing call sites). */
+export function qbConnectFailureMessage(err: unknown): string {
+  return apiRequestFailureMessage(err, "`/api/qb/connect/url`");
 }
 
 async function getAccessToken(): Promise<string | undefined> {
