@@ -1,3 +1,4 @@
+import inspect
 import logging
 import os
 import time
@@ -31,17 +32,32 @@ def _allowed_cors_origins() -> list[str]:
     return origins
 
 
+def _cors_origin_regex() -> str | None:
+    """Optional regex for extra origins (e.g. all Vercel previews). Must full-match Origin."""
+    raw = os.getenv("CORS_ORIGIN_REGEX", "").strip()
+    return raw or None
+
+
 app = FastAPI(title="Membership App API", version=APP_VERSION)
 
 allowed_origins = _allowed_cors_origins()
+origin_regex = _cors_origin_regex()
 logger.info("CORS allow_origins: %s", allowed_origins)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if origin_regex:
+    logger.info("CORS allow_origin_regex: %s", origin_regex)
+
+_cors_kw: dict = {
+    "allow_origins": allowed_origins,
+    "allow_origin_regex": origin_regex,
+    "allow_credentials": True,
+    "allow_methods": ["*"],
+    "allow_headers": ["*"],
+}
+# Newer Starlette checks Access-Control-Request-Private-Network on preflight.
+if "allow_private_network" in inspect.signature(CORSMiddleware.__init__).parameters:
+    _cors_kw["allow_private_network"] = True
+
+app.add_middleware(CORSMiddleware, **_cors_kw)
 
 
 @app.get("/health")
