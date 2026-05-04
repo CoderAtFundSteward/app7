@@ -1,6 +1,3 @@
--- Kept in sync with supabase/migrations/20260427120000_fundsteward_core.sql
--- Apply via Supabase CLI (`supabase db push`) or SQL Editor on a hosted project.
-
 -- FundSteward core schema for Supabase (Postgres 15).
 -- Members are 1:1 with auth.users.id (matches FastAPI JWT user id).
 
