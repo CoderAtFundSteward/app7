@@ -8,11 +8,14 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 const labelClass =
   "text-[10px] font-extrabold uppercase tracking-widest text-white/40";
 const inputClass =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 transition-all focus:border-secondary focus:outline-none focus:ring-0";
+  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 focus:border-secondary focus:outline-none focus:ring-0";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
-  const redirectTo = useMemo(() => searchParams.get("redirectTo") ?? "/dashboard", [searchParams]);
+  const redirectTo = useMemo(
+    () => searchParams.get("redirectTo") ?? "/dashboard",
+    [searchParams]
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +80,7 @@ export default function LoginPage() {
 
       <div className="my-6 flex items-center gap-3">
         <div className="h-px flex-1 bg-white/10" />
-        <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">or</span>
+        <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">OR</span>
         <div className="h-px flex-1 bg-white/10" />
       </div>
 
@@ -120,11 +123,11 @@ export default function LoginPage() {
             className={inputClass}
           />
         </div>
-        {error && (
+        {error ? (
           <p className="text-sm font-medium text-rose-300" role="alert">
             {error}
           </p>
-        )}
+        ) : null}
         <button
           type="submit"
           disabled={loading}
@@ -136,7 +139,10 @@ export default function LoginPage() {
 
       <p className="mt-8 text-center text-sm text-white/50">
         New here?{" "}
-        <Link className="font-semibold text-secondary transition-colors hover:text-accent" href="/signup">
+        <Link
+          className="font-semibold text-secondary transition-colors hover:text-accent"
+          href="/signup"
+        >
           Create your account
         </Link>
       </p>

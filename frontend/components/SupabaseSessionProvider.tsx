@@ -17,43 +17,43 @@ const SupabaseSessionContext = createContext<SupabaseSessionContextValue>({
 export function SupabaseSessionProvider({
   children,
   initialSession
-}: {
+}: Readonly<{
   children: React.ReactNode;
   initialSession: Session | null;
-}) {
+}>) {
   const [session, setSession] = useState<Session | null>(initialSession);
-  const [loading, setLoading] = useState<boolean>(!initialSession);
+  const [loading, setLoading] = useState<boolean>(() => initialSession == null);
 
   useEffect(() => {
     const supabase = getSupabaseBrowserClient();
 
-    supabase.auth
-      .getSession()
-      .then(({ data }) => {
-        setSession(data.session ?? null);
-      })
-      .finally(() => setLoading(false));
+    void supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session ?? null);
+      setLoading(false);
+    });
 
     const {
       data: { subscription }
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
+      setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
 
   const value = useMemo(
-    () => ({
-      session,
-      loading
-    }),
+    (): SupabaseSessionContextValue => ({ session, loading }),
     [session, loading]
   );
 
-  return <SupabaseSessionContext.Provider value={value}>{children}</SupabaseSessionContext.Provider>;
+  return (
+    <SupabaseSessionContext.Provider value={value}>{children}</SupabaseSessionContext.Provider>
+  );
 }
 
-export function useSupabaseSession() {
+export function useSupabaseSession(): SupabaseSessionContextValue {
   return useContext(SupabaseSessionContext);
 }

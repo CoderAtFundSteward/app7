@@ -7,7 +7,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 const labelClass =
   "text-[10px] font-extrabold uppercase tracking-widest text-white/40";
 const inputClass =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 transition-all focus:border-secondary focus:outline-none focus:ring-0";
+  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 focus:border-secondary focus:outline-none focus:ring-0";
 
 export default function UpdatePasswordPage() {
   const [ready, setReady] = useState(false);
@@ -59,6 +59,7 @@ export default function UpdatePasswordPage() {
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
     if (password.length < 8) {
       setError("Password must be at least 8 characters.");
       return;
@@ -86,7 +87,7 @@ export default function UpdatePasswordPage() {
         Set new password
       </h1>
       <p className="mt-2 text-sm leading-relaxed text-white/60">
-        Enter a new password for your account.
+        Enter a new password for your account (minimum 8 characters).
       </p>
 
       {done ? (
@@ -95,12 +96,12 @@ export default function UpdatePasswordPage() {
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
-          {!ready && (
+          {!ready ? (
             <p className="text-sm text-white/50">
               Verifying your reset link… If this doesn&apos;t go away, open the link from your email
               again or request a new reset from the sign-in page.
             </p>
-          )}
+          ) : null}
           <div className="space-y-2">
             <label className={labelClass} htmlFor="new-password">
               New password
@@ -135,11 +136,11 @@ export default function UpdatePasswordPage() {
               disabled={!ready}
             />
           </div>
-          {error && (
+          {error ? (
             <p className="text-sm font-medium text-rose-300" role="alert">
               {error}
             </p>
-          )}
+          ) : null}
           <button
             type="submit"
             disabled={loading || !ready}

@@ -7,7 +7,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 const labelClass =
   "text-[10px] font-extrabold uppercase tracking-widest text-white/40";
 const inputClass =
-  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 transition-all focus:border-secondary focus:outline-none focus:ring-0";
+  "w-full rounded-lg border border-white/10 bg-white/5 px-5 py-3.5 text-white placeholder:text-white/25 focus:border-secondary focus:outline-none focus:ring-0";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -45,8 +45,8 @@ export default function ForgotPasswordPage() {
 
       {sent ? (
         <p className="mt-8 text-sm font-medium text-accent">
-          Check your inbox for a message from Supabase. The link opens a page where you can set a new
-          password. If you don&apos;t see it, check spam or wait a minute and try again.
+          If an account exists for that email, you&apos;ll receive a message with a link. Open it to
+          set a new password. Check spam or wait a minute before trying again.
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -65,11 +65,11 @@ export default function ForgotPasswordPage() {
               className={inputClass}
             />
           </div>
-          {error && (
+          {error ? (
             <p className="text-sm font-medium text-rose-300" role="alert">
               {error}
             </p>
-          )}
+          ) : null}
           <button
             type="submit"
             disabled={loading}
