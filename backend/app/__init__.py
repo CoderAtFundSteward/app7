@@ -1,1 +1,0 @@
-"""FundSteward backend application package."""

@@ -1,12 +1,2 @@
-fastapi
-uvicorn
-supabase
-intuit-oauth
-python-quickbooks
-cryptography
-python-dotenv
-pydantic
-httpx
-pydantic-settings
-python-multipart
-openpyxl
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0

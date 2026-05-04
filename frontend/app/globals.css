@@ -1,37 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
-    @apply antialiased;
-  }
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
 
-  a {
-    @apply transition-colors;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
   }
 }
 
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 @layer utilities {
-  .material-symbols-outlined {
-    font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
-  }
-
-  .editorial-shadow {
-    box-shadow: 0 20px 40px -10px rgba(10, 25, 47, 0.1);
-  }
-
-  .gold-gradient {
-    background: linear-gradient(135deg, #c9a961 0%, #b3934f 100%);
-  }
-
-  .letter-spacing-tight {
-    letter-spacing: -0.02em;
-  }
-
-  .letter-spacing-wide {
-    letter-spacing: 0.05em;
+  .text-balance {
+    text-wrap: balance;
   }
 }
