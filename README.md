@@ -38,7 +38,9 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Health check: [http://localhost:8000/health](http://localhost:8000/health)
 
-## Deployment sketch
+## Deployment (FundSteward4 + Vercel + Railway)
 
-- **Frontend:** Vercel with root directory `frontend`.
-- **Backend:** Railway with root directory `backend` (see `backend/railway.json`). Point `NEXT_PUBLIC_API_URL` at the Railway URL and widen CORS in `backend/app/main.py` for production origins.
+See **`docs/DEPLOY.md`** for Supabase project **FundSteward4**, env var tables, and ordering (Supabase → Railway → Vercel).
+
+- **Frontend:** Vercel, root directory `frontend` (`frontend/vercel.json` optional hints).
+- **Backend:** Railway, root directory `backend` (`backend/railway.json`). CORS reads `FRONTEND_URL` and optional `CORS_ORIGIN_REGEX`.
